@@ -1,0 +1,53 @@
+openapi: 3.0.1
+info:
+  title: DevQ-Screenshot-service
+  description: DevQ - Screenshot-service
+  version: 1.0.0
+servers:
+  - url: /api/v1
+tags:
+  - name: Generate screenshot
+    description: Generate the screenshots for a project
+paths:
+  /generate:
+    post:
+      tags:
+        - Generate
+      description: Trigger a screenshot generation for a project
+      requestBody:
+        description: Project metadata
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectRequest'
+        required: true
+      responses:
+        200:
+          description: Returns all screenshot refs grouped by scenario Id
+          content: {}
+  /spec:
+    get:
+      tags:
+        - Specification
+      responses:
+        200:
+          description: Return the API specification
+          content: {}
+components:
+  schemas:
+    ProjectRequest:
+      title: ProjectRequest
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+          example: no_stress
+        id:
+          type: integer
+          example: 2
+        sourceCode:
+          type: string
+          example: s3://path_to_the_code_archive
+          format: uri

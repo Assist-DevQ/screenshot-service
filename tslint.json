@@ -1,0 +1,20 @@
+{
+  "extends": ["tslint:latest"],
+  "rules": {
+    "semicolon": [true, "never"],
+    "trailing-comma": false,
+    "quotemark": [true, "single", "avoid-escape", "jsx-double", "avoid-template"],
+    "no-console": [false, "log", "warning"],
+    "object-literal-sort-keys": false,
+    "ordered-imports": false,
+    "jsx-no-lambda": true,
+    "jsx-boolean-value": false
+  },
+  "linterOptions": {
+    "exclude": [
+      "config/**/*.js",
+      "node_modules/**/*.ts",
+      "coverage/lcov-report/*.js"
+    ]
+  }
+}
