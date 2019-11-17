@@ -25,6 +25,22 @@ paths:
         200:
           description: Returns all screenshot refs grouped by scenario Id
           content: {}
+  /generate/p:
+    post:
+      tags:
+        - Download code
+      description: Trigger a code download
+      requestBody:
+        description: Repo metadata
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RepoRequest'
+        required: true
+      responses:
+        200:
+          description: Returns success
+          content: {}
   /spec:
     get:
       tags:
@@ -51,3 +67,20 @@ components:
           type: string
           example: s3://path_to_the_code_archive
           format: uri
+    RepoRequest:
+      title: RepoRequest
+      required:
+        - user
+        - repo
+        - branch
+      type: object
+      properties:
+        user:
+          type: string
+          example: Assist-DevQ
+        repo:
+          type: string
+          example: platform-bim
+        branch:
+          type: string
+          example: master

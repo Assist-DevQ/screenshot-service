@@ -2,11 +2,11 @@ import logger from '../../common/logger'
 import { IEvent, DOMEvent } from './types/events'
 import puppeteer, { Browser, Page } from 'puppeteer'
 
-export class CodeService {
-  public static async build(): Promise<CodeService> {
+export class ScreenService {
+  public static async build(): Promise<ScreenService> {
     const browser = await puppeteer.launch()
     const page = await browser.newPage()
-    return new CodeService(browser, page)
+    return new ScreenService(browser, page)
   }
 
   private readonly browser: Browser
@@ -15,10 +15,6 @@ export class CodeService {
   private constructor(browser: Browser, page: Page) {
     this.browser = browser
     this.page = page
-  }
-
-  public async downloadCode(ref: string): Promise<void> {
-    logger.info(`downloading codebase ${ref}`)
   }
 
   public async generateScreens(events: IEvent[]): Promise<void> {
