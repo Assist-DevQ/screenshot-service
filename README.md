@@ -7,6 +7,18 @@ The screenshot service. Orchestrates the building/running of the docker images a
 - `dist`: This is where the Chrome Extension will be built
   - `dist/`: Generated JavaScript bundles with source mapping, and assets
 
+## Install `docker`:
+
+    * [Mac](https://docs.docker.com/engine/installation/mac/) /
+    * [Windows](https://docs.docker.com/engine/installation/windows/) /
+    * [Ubuntu](https://docs.docker.com/engine/installation/linux/ubuntulinux/)
+
+Make sure that docker is available as a command line exec:
+
+`docker -v`
+
+Prints something like: `Docker version 19.03.4, build 9013bf5`
+
 ## Env
 To run the code locally you need to create a `.env` file:
 
@@ -16,7 +28,9 @@ PORT=3000
 LOG_LEVEL=debug
 REQUEST_LIMIT=300kb
 SESSION_SECRET=REPLACE_ME
-
+GITHUB_BASE=https://api.github.com/repos
+GITHUB_FORMAT=tarball
+CODE_DIR=code
 OPENAPI_SPEC=/api/v1/spec
 ```
 

@@ -18,14 +18,21 @@ export class GithubService {
       url: this.archUrl(repo),
       responseType: 'stream'
     })
-    return { folderName: this.extractFolderName(res.headers['content-disposition']), codeStream: res.data }
+    const folderName = this.extractFolderName(res.headers['content-disposition'])
+    return {
+      commitId: this.extractCommitId(folderName),
+      folderName,
+      codeStream: res.data
+    }
   }
 
   private extractFolderName(cd: string): string {
     const fileName = cd.split(' ').find((tok: string) => tok.startsWith(this.fileMark))
     return fileName.substr(this.fileMark.length, fileName.indexOf(this.archExt) - this.archExt.length - 2)
   }
-
+  private extractCommitId(folderName: string): string {
+    return folderName.substr(folderName.lastIndexOf('-') + 1)
+  }
   private archUrl(repo: IRepoConfig): string {
     return `${this.conf.baseUrl}/${repo.user}/${repo.repo}/${this.conf.archiveType}/${repo.branch}`
   }

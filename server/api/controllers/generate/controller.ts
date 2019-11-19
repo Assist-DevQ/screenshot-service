@@ -7,6 +7,8 @@ import { GithubService } from '../../services/github.service'
 import { TarService } from '../../services/tar.service'
 import { IRepoConfig } from '../../services/types/repo-config'
 import logger from '../../../common/logger'
+import path from 'path'
+import { DockerService } from '../../services/docker.service'
 
 export class Controller {
   public async create(req: Request, res: Response): Promise<void> {
@@ -25,8 +27,17 @@ export class Controller {
     logger.info('Down for:', repo)
     try {
       const gitRes = await git.repoReadStreamAxios(repo)
-      const path = await tar.extract(gitRes.codeStream, repo)
-      res.status(200).json({ path: `${path}/${gitRes.folderName}` })
+      const dir = await tar.extract(gitRes.codeStream, repo)
+      const codeDir = path.normalize([dir, gitRes.folderName].join('/'))
+      await DockerService.build(codeDir, repo.repo, gitRes.commitId)
+      const runningPid = DockerService.run(codeDir, repo.repo, gitRes.commitId)
+      runningPid.stdout.pipe(process.stdout)
+      runningPid.stderr.pipe(process.stderr)
+      setTimeout(() => {
+        logger.info('Stopping docker run')
+        runningPid.kill()
+      }, 30000)
+      res.status(200).json({ path: codeDir, pid: runningPid.pid })
     } catch (e) {
       res.status(500).json({ Err: e.message })
     }
