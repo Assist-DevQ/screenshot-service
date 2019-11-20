@@ -21,6 +21,7 @@ Prints something like: `Docker version 19.03.4, build 9013bf5`
 
 ## Env
 To run the code locally you need to create a `.env` file:
+Ask Andrei for a GCP key.
 
 ```
 APP_ID=devq-scrnr
@@ -32,6 +33,7 @@ GITHUB_BASE=https://api.github.com/repos
 GITHUB_FORMAT=tarball
 CODE_DIR=code
 OPENAPI_SPEC=/api/v1/spec
+GOOGLE_APPLICATION_CREDENTIALS=\User\Home\<path-to-the-key>\key.json
 ```
 
 ## Development build

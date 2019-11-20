@@ -3,4 +3,4 @@ import controller from './controller'
 export default express
   .Router()
   .post('/', controller.create)
-  .post('/p', controller.download)
+  .post('/p', controller.gcs)

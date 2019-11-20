@@ -4,9 +4,6 @@ import logger from '../../common/logger'
 const execP = util.promisify(exec)
 
 export class DockerService {
-  private static dockerBuildCommand: string = 'docker build -t'
-  private static dockerRunCommand: string = 'docker run -v ${PWD}:/app -v /app/node_modules -p 3010:3000 --rm'
-
   public static build(cwd: string, serviceName: string, version: string): Promise<any> {
     console.info('Building in:', cwd)
     return execP(this.buildCommand(serviceName, version), { cwd })
@@ -17,6 +14,8 @@ export class DockerService {
     return exec(this.runCommand(serviceName, version), { cwd })
   }
 
+  private static dockerBuildCommand: string = 'docker build -t'
+  private static dockerRunCommand: string = 'docker run -v ${PWD}:/app -v /app/node_modules -p 3010:3000 --rm'
   private static buildCommand(serviceName: string, version: string): string {
     return `${this.dockerBuildCommand} ${serviceName}:${version} .`
   }

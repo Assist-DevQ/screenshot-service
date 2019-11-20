@@ -9,6 +9,7 @@ import { IRepoConfig } from '../../services/types/repo-config'
 import logger from '../../../common/logger'
 import path from 'path'
 import { DockerService } from '../../services/docker.service'
+import { GCStorage } from '../../services/GCStorage.service'
 
 export class Controller {
   public async create(req: Request, res: Response): Promise<void> {
@@ -20,6 +21,18 @@ export class Controller {
         .json({ working: true })
     )
   }
+
+  public async gcs(req: Request, res: Response): Promise<void> {
+    const gcs = new GCStorage()
+    try {
+      // await gcs.upload('./screens/1573921915949-start-.png')
+      const url = await gcs.signUrl('1573921915949-start-.png')
+      res.status(200).json({url})
+    } catch (e) {
+      res.status(500).json({ Err: e.message })
+    }
+  }
+
   public async download(req: Request, res: Response): Promise<void> {
     const git = new GithubService({ baseUrl: process.env.GITHUB_BASE, archiveType: process.env.GITHUB_FORMAT })
     const tar = new TarService(process.env.CODE_DIR)
