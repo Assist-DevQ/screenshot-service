@@ -12,24 +12,8 @@ paths:
   /generate:
     post:
       tags:
-        - Generate
-      description: Trigger a screenshot generation for a project
-      requestBody:
-        description: Project metadata
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ProjectRequest'
-        required: true
-      responses:
-        200:
-          description: Returns all screenshot refs grouped by scenario Id
-          content: {}
-  /generate/p:
-    post:
-      tags:
-        - Download code
-      description: Trigger a code download
+        - Generates the screens for the given repo on branch
+      description: Trigger a code download, build the docker image, run docker image, take screens , upload the to GC storage
       requestBody:
         description: Repo metadata
         content:
@@ -51,22 +35,6 @@ paths:
           content: {}
 components:
   schemas:
-    ProjectRequest:
-      title: ProjectRequest
-      required:
-        - name
-      type: object
-      properties:
-        name:
-          type: string
-          example: no_stress
-        id:
-          type: integer
-          example: 2
-        sourceCode:
-          type: string
-          example: s3://path_to_the_code_archive
-          format: uri
     RepoRequest:
       title: RepoRequest
       required:

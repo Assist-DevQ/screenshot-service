@@ -24,15 +24,20 @@ export class GCStorage {
     }
   }
 
-  public async upload(filename: string): Promise<void> {
+  public async uploadAll(files: string[]): Promise<string[]> {
+    const ups = files.map((f: string) => this.upload(f))
+    return Promise.all(ups)
+  }
+
+  public async upload(filename: string): Promise<string> {
     try {
-      await this.storageClient.bucket(this.bucketName).upload(filename, {
+      const [file, _] = await this.storageClient.bucket(this.bucketName).upload(filename, {
         gzip: true,
         metadata: {
           cacheControl: 'public, max-age=31536000'
         }
       })
-      console.log('Done:', filename)
+      return file.id
     } catch (err) {
       logger.error(err)
     }
