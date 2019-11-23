@@ -31,6 +31,7 @@ export class Orchestrator {
     const runningProc = await DockerService.run(codeDir, freePort, repo.repo, gitRes.commitId)
     try {
       const imgs = await this.screens.generateScreens(events, freePort)
+      console.log('MAdre facka', imgs)
       const files = await this.storage.uploadAll(imgs)
       return files
     } finally {

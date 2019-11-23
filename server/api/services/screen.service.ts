@@ -15,20 +15,27 @@ export class ScreenService {
     this.browser = browser
   }
 
-  public async generateScreens(events: IEvent[], port: number, imgs: string[] = [], page?: Page): Promise<string[]> {
-    if (!page) {
-      logger.info('Start generating', events.length)
-      page = await this.browser.newPage()
-      logger.info('New browser page is ready!')
-    }
+  public async generateScreens(events: IEvent[], port: number): Promise<string[]> {
+    logger.info('Start generating', events.length)
+    const page = await this.browser.newPage()
+    await page.setViewport({
+      width: 1680,
+      height: 1050,
+      deviceScaleFactor: 1
+    })
+    logger.info('New browser page is ready!')
+    const imagePaths = []
+    await this.recScreens(events, port, imagePaths, page)
+    return imagePaths
+  }
+
+  private async recScreens(events: IEvent[], port: number, imgs: string[], page: Page): Promise<void> {
     if (events.length) {
       logger.info('Remaining events:', events.length)
       const evt = events.pop()
       const imgPath = await this.handleEvent(evt, port, page)
       imgs.push(imgPath)
-      await this.generateScreens(events, port, imgs, page)
-    } else {
-      return imgs
+      await this.recScreens(events, port, imgs, page)
     }
   }
 

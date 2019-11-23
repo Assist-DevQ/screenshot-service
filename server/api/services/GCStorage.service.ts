@@ -37,7 +37,7 @@ export class GCStorage {
           cacheControl: 'public, max-age=31536000'
         }
       })
-      return file.id
+      return file.metadata.id
     } catch (err) {
       logger.error(err)
     }

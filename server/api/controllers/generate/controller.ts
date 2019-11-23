@@ -27,7 +27,7 @@ export class ScreensController {
       res.status(200).json({ files })
     } catch (err) {
       logger.error('Something blew up:', err.message, err.stack)
-      res.status(500).json({ error: err })
+      res.status(500).json({ error: err.message })
     }
   }
   // public async gcs(req: Request, res: Response): Promise<void> {
