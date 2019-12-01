@@ -1,5 +1,5 @@
 export interface IEvent {
-  event: DOMEvent
+  name: DOMEvent
   data: IEventData
   time: number
 }
@@ -8,6 +8,8 @@ export interface IEventData {
   path: IEventPath[]
   csspath: string
   csspathfull: string
+  windowWidth?: number
+  windowHeight?: number
   clientX?: number
   clientY?: number
   scrollX: number

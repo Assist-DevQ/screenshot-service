@@ -16,13 +16,11 @@ export class ScreenService {
   }
 
   public async generateScreens(events: IEvent[], port: number): Promise<string[]> {
+    if (events.length === 0) {
+      return []
+    }
     logger.info('Start generating', events.length)
     const page = await this.browser.newPage()
-    await page.setViewport({
-      width: 1680,
-      height: 1050,
-      deviceScaleFactor: 1
-    })
     logger.info('New browser page is ready!')
     const imagePaths = []
     await this.recScreens(events, port, imagePaths, page)
@@ -40,9 +38,10 @@ export class ScreenService {
   }
 
   private async handleEvent(e: IEvent, port: number, page: Page): Promise<string> {
-    logger.info('Handling', e.event)
-    switch (e.event) {
+    logger.info('Handling', e.name)
+    switch (e.name) {
       case DOMEvent.Start:
+        await this.setViewport(e, page)
         await this.navigate(e, port, page)
         return this.takeScreen(e, page)
       case DOMEvent.Click:
@@ -55,7 +54,7 @@ export class ScreenService {
         await this.delay(300)
         return this.takeScreen(e, page)
       default:
-        logger.info('Skipping:', e.event)
+        logger.info('Skipping:', e.name)
     }
   }
 
@@ -68,9 +67,18 @@ export class ScreenService {
     logger.info('URL IS:', page.url())
   }
 
+  private async setViewport(e: IEvent, page: Page): Promise<void> {
+    await page.setViewport({
+      width: e.data.windowWidth,
+      height: e.data.windowHeight,
+      deviceScaleFactor: 1
+    })
+    logger.info(`Page size is:${e.data.windowWidth}/${e.data.windowHeight}`)
+  }
+
   private async takeScreen(e: IEvent, page: Page): Promise<string> {
     logger.info('Taking screen:', page.url())
-    const path = `screens/${e.time}-${e.event}-${e.data.innerText || e.data.type || ''}.png`
+    const path = `screens/${e.time}-${e.name}-${e.data.innerText || e.data.type || ''}.png`
     await page.screenshot({ path })
     return path
   }

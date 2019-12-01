@@ -28,12 +28,15 @@ APP_ID=devq-scrnr
 PORT=3000
 LOG_LEVEL=debug
 REQUEST_LIMIT=300kb
-SESSION_SECRET=REPLACE_ME
+SESSION_SECRET=<REPLACE_ME>
 GITHUB_BASE=https://api.github.com/repos
 GITHUB_FORMAT=tarball
 CODE_DIR=code
 OPENAPI_SPEC=/api/v1/spec
 GOOGLE_APPLICATION_CREDENTIALS=\User\Home\<path-to-the-key>\key.json
+BACK_API_AUTH=<REPLACE_ME>
+BACK_API_BASE_URL=http://f8867ec3.ngrok.io/admin/api/v1
+SCENARIOS=/scenarios
 ```
 
 ## Development build

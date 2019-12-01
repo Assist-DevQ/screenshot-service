@@ -43,6 +43,9 @@ components:
         - branch
       type: object
       properties:
+        projectId:
+          type: number
+          example: 1
         user:
           type: string
           example: Assist-DevQ
