@@ -10,6 +10,8 @@ import { Application } from 'express'
 import { Orchestrator } from './api/services/orchestrator.service'
 import { BackEndAPI } from './api/services/BackEndApi.sevice'
 import { IApiConf } from './api/services/types/api-conf'
+import { PixelDiff } from './api/services/PixelDiff'
+import {readFileSync, createWriteStream} from 'fs'
 
 const boot = async (): Promise<Application> => {
   const port = Number(process.env.PORT)
@@ -25,6 +27,15 @@ const boot = async (): Promise<Application> => {
   const storage: GCStorage = new GCStorage()
   const bakApi: BackEndAPI = new BackEndAPI(apiConf)
   const orchestrator = new Orchestrator(github, tar, screens, storage, bakApi)
+  const pix = new PixelDiff()
+  // const ff = readFileSync('./screens/1574517289787-start-.png')
+  // const ff1 = readFileSync('./screens/1574517292662-click- Login.png')
+  // const diff = await pix.compare(ff, ff1)
+  // if(diff.diff)  {
+  //   const fname = await storage.uploadStream('the-fucking-dif.png', diff.diff)
+  //   console.log('NAME', fname)
+  //   // diff.diff.pipe(createWriteStream('iuhuu.png'))
+  // }
   return new Server().router(routes(orchestrator)).listen(port)
 }
 export default boot()

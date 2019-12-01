@@ -1,5 +1,6 @@
 import { Storage, GetSignedUrlConfig } from '@google-cloud/storage'
 import logger from '../../common/logger'
+import { Readable } from 'stream'
 
 export class GCStorage {
   private readonly storageClient: Storage
@@ -43,6 +44,23 @@ export class GCStorage {
     }
   }
 
+  public uploadStream(filename: string, file: Readable): Promise<string> {
+    return new Promise((res, rej) => {
+      const fileStream = this.storageClient.bucket(this.bucketName).file(filename)
+      const stream = fileStream.createWriteStream({
+        metadata: {
+          contentType: 'image/png'
+        },
+        resumable: false
+      })
+      stream.on('error', rej)
+      stream.on('finish', () => {
+        fileStream.makePublic().then(() => res(this.getPublicUrl(filename))).catch(rej)
+      })
+      file.pipe(stream)
+    })
+  }
+
   public async signUrl(filename: string): Promise<string> {
     try {
       const [url] = await this.storageClient
@@ -53,5 +71,9 @@ export class GCStorage {
     } catch (err) {
       logger.error(err)
     }
+  }
+
+  public getPublicUrl (filename) {
+    return `https://storage.googleapis.com/${this.bucketName}/${filename}`
   }
 }
