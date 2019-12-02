@@ -26,10 +26,10 @@ const boot = async (): Promise<Application> => {
   const tar: TarService = new TarService(process.env.CODE_DIR)
   const screens: ScreenService = await ScreenService.build()
   const storage: GCStorage = new GCStorage()
-  const bakApi: BackEndAPI = new BackEndAPI(apiConf)
-  const orchestrator = new Orchestrator(github, tar, screens, storage, bakApi)
+  const backApi: BackEndAPI = new BackEndAPI(apiConf)
   const pix = new PixelDiff()
-  const diffOrchestrator = new DiffOrchestrator(storage, bakApi, pix)
+  const diffOrchestrator = new DiffOrchestrator(storage, pix)
+  const orchestrator = new Orchestrator({github, tar, screens, storage, backApi, diffOrchestrator})
   // const ff = readFileSync('./screens/1574517289787-start-.png')
   // const ff1 = readFileSync('./screens/1574517292662-click- Login.png')
   // const diff = await pix.compare(ff, ff1)
@@ -38,6 +38,6 @@ const boot = async (): Promise<Application> => {
   //   console.log('NAME', fname)
   //   // diff.diff.pipe(createWriteStream('iuhuu.png'))
   // }
-  return new Server().router(routes(orchestrator, diffOrchestrator)).listen(port)
+  return new Server().router(routes(orchestrator)).listen(port)
 }
 export default boot()

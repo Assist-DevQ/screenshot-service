@@ -28,22 +28,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GenerateResponse'
-  /diff:
-    post:
-      tags:
-        - Generates the diff images
-      description: Given the project id it computes the diff for all the scenarios of a given project
-      requestBody:
-        description: Project id
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/DiffRequest'
-        required: true
-      responses:
-        200:
-          description: Returns success
-          content: {}
   /spec:
     get:
       tags:
@@ -60,7 +44,8 @@ components:
         - projectId
         - user
         - repo
-        - branch
+        - baseBranch
+        - diffBranch
       type: object
       properties:
         projectId:
@@ -72,7 +57,10 @@ components:
         repo:
           type: string
           example: platform-bim
-        branch:
+        baseBranch:
+          type: string
+          example: master
+        diffBranch:
           type: string
           example: master
     GenerateResponse:
@@ -121,21 +109,16 @@ components:
       title: ScreenFile
       required:
         - eventId
-        - fileUrl
+        - baseFileUrl
+        - diffFileUrl
       type: object
       properties:
         eventId:
           type: number
           example: 23
-        fileUrl:
+        baseFileUrl:
           type: string
-          example: https://storage.googleapis.com/dev-q-screens/376fefd-11-4-23-click-.png
-    DiffRequest:
-      title: DiffRequest
-      required:
-        - projectId
-      type: object
-      properties:
-        projectId:
-          type: number
-          example: 1
+          example: https://storage.googleapis.com/dev-q-screens/376fefd-11-4-23-base-click-.png
+        diffFileUrl:
+          type: string
+          example: https://storage.googleapis.com/dev-q-screens/376fefd-11-4-23-diff-click-.png

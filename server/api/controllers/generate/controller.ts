@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { IRepoConfig } from '../../services/types/repo-config'
+import { IRepoConfig, IRepoDiff } from '../../services/types/repo-config'
 import logger from '../../../common/logger'
 import { Orchestrator } from '../../services/orchestrator.service'
 
@@ -11,7 +11,20 @@ export class ScreensController {
 
   public async startFlow(req: Request, res: Response): Promise<void> {
     try {
-      const files = await this.orchestrator.generateFlow(req.body as IRepoConfig)
+      const body: IRepoDiff = req.body
+      const baseConf: IRepoConfig = {
+        projectId: body.projectId,
+        user: body.user,
+        repo: body.repo,
+        branch: body.baseBranch
+      }
+      const diffConf: IRepoConfig = {
+        projectId: body.projectId,
+        user: body.user,
+        repo: body.repo,
+        branch: body.diffBranch
+      }
+      const files = await this.orchestrator.generateFlow(baseConf, diffConf)
       res.status(200).json({ files })
     } catch (err) {
       logger.error('Something blew up:', err.message, err.stack)

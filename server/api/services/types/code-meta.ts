@@ -6,8 +6,13 @@ export interface ICodeMeta {
   codeStream: IncomingMessage
 }
 
-export interface IScreenMeta {
+export interface IDiffMeta {
   commitId: string,
   projectId: number,
   scenarioId: number,
+}
+
+export interface IScreenMeta extends IDiffMeta {
+  outDir: string,
+  tag: string
 }

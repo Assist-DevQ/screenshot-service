@@ -1,17 +1,18 @@
 import { PixelDiff } from './PixelDiff'
 import { GCStorage } from './GCStorage.service'
 import { BackEndAPI } from './BackEndApi.sevice'
+import { IDiffFile } from './types/scenario'
 
 export class DiffOrchestrator {
   private readonly storage: GCStorage
-  private readonly backApi: BackEndAPI
   private readonly pixDiff: PixelDiff
 
-  constructor(storage: GCStorage, backApi: BackEndAPI, pixDiff: PixelDiff) {
+  constructor(storage: GCStorage, pixDiff: PixelDiff) {
     this.storage = storage
-    this.backApi = backApi
     this.pixDiff = pixDiff
   }
 
-  public async generateDiff(projectId: number): Promise<any> {}
+  public async generateDiff(files: Map<number, Map<number, IDiffFile>>): Promise<Map<number, Map<number, IDiffFile>>> {
+    return files
+  }
 }

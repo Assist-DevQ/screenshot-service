@@ -34,7 +34,7 @@ export class ScreenService {
       logger.info('Remaining events:', events.length)
       const evt = events.pop()
       const fileUrl = await this.handleEvent(meta, evt, port, page)
-      imgs.push({eventId: evt.id, fileUrl})
+      imgs.push({ eventId: evt.id, fileUrl })
       await this.recScreens(meta, events, port, imgs, page)
     }
   }
@@ -80,7 +80,7 @@ export class ScreenService {
 
   private async takeScreen(meta: IScreenMeta, e: IEvent, page: Page): Promise<string> {
     logger.info('Taking screen:', page.url())
-    const path = `screens/${this.computeFileName(meta, e)}.png`
+    const path = `${meta.outDir}/${this.computeFileName(meta, e)}.png`
     await page.screenshot({ path })
     return path
   }
@@ -103,6 +103,6 @@ export class ScreenService {
   }
 
   private computeFileName(meta: IScreenMeta, e: IEvent): string {
-    return `${meta.commitId}-${meta.projectId}-${meta.scenarioId}-${e.id}-${e.name}-${e.data.innerText || e.data.type || ''}`
+    return `${meta.commitId}-${meta.projectId}-${meta.scenarioId}-${e.id}-${meta.tag}-${e.name}-${e.data.innerText || e.data.type || ''}`
   }
 }

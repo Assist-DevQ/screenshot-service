@@ -12,7 +12,7 @@ export class TarService {
   }
 
   public async extract(r: IncomingMessage, repo: IRepoConfig): Promise<string> {
-    await this.createDir(repo)
+    await this.createDir(this.outPath(repo))
     const unzip = tar.x({ cwd: this.outPath(repo) })
     return new Promise((res, rej) => {
       logger.info('Unzip')
@@ -26,8 +26,7 @@ export class TarService {
     })
   }
 
-  private async createDir(repo: IRepoConfig): Promise<void> {
-    const out = this.outPath(repo)
+  public async createDir(out: string): Promise<void> {
     await promises.mkdir(out, { recursive: true })
   }
 

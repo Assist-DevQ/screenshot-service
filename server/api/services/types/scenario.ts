@@ -1,5 +1,5 @@
 import { IEvent } from './events'
-import { IScreenMeta } from './code-meta';
+import { IScreenMeta, IDiffMeta } from './code-meta';
 
 export interface IScenarioMeta {
   id: number,
@@ -26,7 +26,24 @@ export interface IEventFile {
   fileUrl: string
 }
 
+export interface IDiffFile {
+  eventId: number,
+  baseFileUrl: string,
+  diffFileUrl: string
+}
+
+export interface IScenarioDiff {
+  meta: IDiffMeta,
+  files: IDiffFile[]
+}
+
 export interface IScenarioFiles {
   meta: IScreenMeta,
   files: IEventFile[]
+}
+
+export interface IGenerateResult {
+  screens: IScenarioFiles[],
+  outDir: string,
+  commitId: string,
 }
