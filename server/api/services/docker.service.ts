@@ -6,7 +6,7 @@ const execP = util.promisify(exec)
 
 export class DockerService {
   public static build(cwd: string, serviceName: string, version: string): Promise<any> {
-    console.info('Building in:', cwd)
+    logger.info('Building in:', cwd)
     return execP(this.buildCommand(serviceName, version), { cwd })
   }
 

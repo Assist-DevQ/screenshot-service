@@ -1,4 +1,5 @@
 export interface IEvent {
+  id: number
   name: DOMEvent
   data: IEventData
   time: number

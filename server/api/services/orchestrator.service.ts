@@ -9,6 +9,8 @@ import getPort from 'get-port'
 import logger from '../../common/logger'
 import { BackEndAPI } from './BackEndApi.sevice'
 import { IScenarioFiles, IScenarioMeta } from './types/scenario'
+import rimraf from 'rimraf'
+import { IScreenMeta } from './types/code-meta'
 
 export class Orchestrator {
   private readonly github: GithubService
@@ -33,7 +35,7 @@ export class Orchestrator {
     const freePort = await getPort()
     const runningProc = await DockerService.run(codeDir, freePort, repo.repo, gitRes.commitId)
     try {
-      const screens = await this.generateScreens(repo.projectId, freePort)
+      const screens = await this.generateScreens(gitRes.commitId, repo.projectId, freePort)
       return screens
     } finally {
       logger.warn('Screens done, killing the test server:', runningProc.pid)
@@ -42,19 +44,31 @@ export class Orchestrator {
     }
   }
 
-  private async generateScreens(projectId: number, freePort: number): Promise<IScenarioFiles[]> {
+  private async generateScreens(commitId: string, projectId: number, freePort: number): Promise<IScenarioFiles[]> {
     const scenarios = await this.backApi.getScenarios(projectId)
-    return Promise.all(scenarios.map((s: IScenarioMeta) => this.generateAndStore(projectId, s.id, freePort)))
+    const m: (s: IScenarioMeta) => IScreenMeta = (s: IScenarioMeta) => ({ commitId, projectId, scenarioId: s.id })
+    return Promise.all(scenarios.map((s: IScenarioMeta) => this.generateAndStore(m(s), freePort)))
   }
 
-  private async generateAndStore(projectId: number, scenarioId: number, freePort: number): Promise<IScenarioFiles> {
-    const scenarioData = await this.backApi.getScenarioEvents(projectId, scenarioId)
-    const images = await this.screens.generateScreens(scenarioData.events.reverse(), freePort)
+  private async generateAndStore(meta: IScreenMeta, freePort: number): Promise<IScenarioFiles> {
+    const scenarioData = await this.backApi.getScenarioEvents(meta.projectId, meta.scenarioId)
+    const images = await this.screens.generateScreens(meta, scenarioData.events, freePort)
     const files = await this.storage.uploadAll(images)
-    return {scenarioId, files}
+    return { scenarioId: meta.scenarioId, files }
   }
 
-  private async cleanUp(codeDir: string, screensDir: string): Promise<void> {
-    fs
+  private cleanUp(codeDir: string, screensDir: string): void {
+    logger.info('ready to clean :', codeDir)
+    rimraf(codeDir, this.onCleanErr(codeDir))
+    rimraf(`${screensDir}/**/*.png`, this.onCleanErr(screensDir))
+  }
+
+  private onCleanErr(dir: string): (err: Error) => void {
+    return (err: Error) => {
+      if (err) {
+        logger.error(`Error removing ${dir}`, err)
+      }
+      logger.info('Removed :', dir)
+    }
   }
 }

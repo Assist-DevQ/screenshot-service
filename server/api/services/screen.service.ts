@@ -2,6 +2,8 @@ import logger from '../../common/logger'
 import { IEvent, DOMEvent } from './types/events'
 import puppeteer, { Browser, Page } from 'puppeteer'
 import { parse } from 'url'
+import { IScenarioEvent } from './types/scenario'
+import { IScreenMeta } from './types/code-meta'
 
 export class ScreenService {
   public static async build(): Promise<ScreenService> {
@@ -15,7 +17,7 @@ export class ScreenService {
     this.browser = browser
   }
 
-  public async generateScreens(events: IEvent[], port: number): Promise<string[]> {
+  public async generateScreens(meta: IScreenMeta, events: IEvent[], port: number): Promise<string[]> {
     if (events.length === 0) {
       return []
     }
@@ -23,36 +25,36 @@ export class ScreenService {
     const page = await this.browser.newPage()
     logger.info('New browser page is ready!')
     const imagePaths = []
-    await this.recScreens(events, port, imagePaths, page)
+    await this.recScreens(meta, events.reverse(), port, imagePaths, page)
     return imagePaths
   }
 
-  private async recScreens(events: IEvent[], port: number, imgs: string[], page: Page): Promise<void> {
+  private async recScreens(meta: IScreenMeta, events: IEvent[], port: number, imgs: string[], page: Page): Promise<void> {
     if (events.length) {
       logger.info('Remaining events:', events.length)
       const evt = events.pop()
-      const imgPath = await this.handleEvent(evt, port, page)
+      const imgPath = await this.handleEvent(meta, evt, port, page)
       imgs.push(imgPath)
-      await this.recScreens(events, port, imgs, page)
+      await this.recScreens(meta, events, port, imgs, page)
     }
   }
 
-  private async handleEvent(e: IEvent, port: number, page: Page): Promise<string> {
+  private async handleEvent(meta: IScreenMeta, e: IEvent, port: number, page: Page): Promise<string> {
     logger.info('Handling', e.name)
     switch (e.name) {
       case DOMEvent.Start:
         await this.setViewport(e, page)
         await this.navigate(e, port, page)
-        return this.takeScreen(e, page)
+        return this.takeScreen(meta, e, page)
       case DOMEvent.Click:
         await this.click(e, page)
-        return this.takeScreen(e, page)
+        return this.takeScreen(meta, e, page)
       case DOMEvent.Change:
         await this.change(e, page)
-        return this.takeScreen(e, page)
+        return this.takeScreen(meta, e, page)
       case DOMEvent.End:
         await this.delay(300)
-        return this.takeScreen(e, page)
+        return this.takeScreen(meta, e, page)
       default:
         logger.info('Skipping:', e.name)
     }
@@ -76,9 +78,9 @@ export class ScreenService {
     logger.info(`Page size is:${e.data.screenWidth}/${e.data.screenHeight}`)
   }
 
-  private async takeScreen(e: IEvent, page: Page): Promise<string> {
+  private async takeScreen(meta: IScreenMeta, e: IEvent, page: Page): Promise<string> {
     logger.info('Taking screen:', page.url())
-    const path = `screens/${e.time}-${e.name}-${e.data.innerText || e.data.type || ''}.png`
+    const path = `screens/${this.computeFileName(meta, e)}.png`
     await page.screenshot({ path })
     return path
   }
@@ -98,5 +100,9 @@ export class ScreenService {
     return new Promise((res, rej) => {
       setTimeout(res, timeMs)
     })
+  }
+
+  private computeFileName(meta: IScreenMeta, e: IEvent): string {
+    return `${meta.commitId}-${meta.projectId}-${meta.scenarioId}-${e.id}-${e.name}-${e.data.innerText || e.data.type || ''}`
   }
 }

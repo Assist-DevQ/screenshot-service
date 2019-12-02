@@ -5,3 +5,9 @@ export interface ICodeMeta {
   commitId: string
   codeStream: IncomingMessage
 }
+
+export interface IScreenMeta {
+  commitId: string,
+  projectId: number,
+  scenarioId: number,
+}
