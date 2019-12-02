@@ -10,7 +10,7 @@ export class BackEndAPI {
     this.conf = conf
     this.http = axios.create({
       baseURL: this.conf.baseUrl,
-      timeout: 1000,
+      timeout: 2000,
       headers: {
         'Authorization': `Basic ${this.conf.auth}`,
         'Content-Type': 'application/json'

@@ -24,6 +24,25 @@ paths:
       responses:
         200:
           description: Returns success
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateResponse'
+  /diff:
+    post:
+      tags:
+        - Generates the diff images
+      description: Given the project id it computes the diff for all the scenarios of a given project
+      requestBody:
+        description: Project id
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DiffRequest'
+        required: true
+      responses:
+        200:
+          description: Returns success
           content: {}
   /spec:
     get:
@@ -38,6 +57,7 @@ components:
     RepoRequest:
       title: RepoRequest
       required:
+        - projectId
         - user
         - repo
         - branch
@@ -55,3 +75,37 @@ components:
         branch:
           type: string
           example: master
+    GenerateResponse:
+      title: GenerateResponse
+      required:
+        - files
+      type: object
+      properties:
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScenarioScreens'
+    ScenarioScreens:
+      title: ScenarioScreens
+      required:
+        - scenarioId
+        - files
+      type: object
+      properties:
+        scenarioId:
+          type: number
+          example: 12
+        files:
+          type: array
+          items:
+            type: string
+            example: 'https://storage.googleapis.com/dev-q-screens/1575277729589-start-.png'
+    DiffRequest:
+      title: DiffRequest
+      required:
+        - projectId
+      type: object
+      properties:
+        projectId:
+          type: number
+          example: 1

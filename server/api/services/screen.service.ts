@@ -69,11 +69,11 @@ export class ScreenService {
 
   private async setViewport(e: IEvent, page: Page): Promise<void> {
     await page.setViewport({
-      width: e.data.windowWidth,
-      height: e.data.windowHeight,
+      width: Number(e.data.screenWidth),
+      height: Number(e.data.screenHeight),
       deviceScaleFactor: 1
     })
-    logger.info(`Page size is:${e.data.windowWidth}/${e.data.windowHeight}`)
+    logger.info(`Page size is:${e.data.screenWidth}/${e.data.screenHeight}`)
   }
 
   private async takeScreen(e: IEvent, page: Page): Promise<string> {

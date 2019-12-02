@@ -33,10 +33,12 @@ export class Orchestrator {
     const freePort = await getPort()
     const runningProc = await DockerService.run(codeDir, freePort, repo.repo, gitRes.commitId)
     try {
-      return this.generateScreens(repo.projectId, freePort)
+      const screens = await this.generateScreens(repo.projectId, freePort)
+      return screens
     } finally {
       logger.warn('Screens done, killing the test server:', runningProc.pid)
       runningProc.kill()
+      this.cleanUp(codeDir, 'screens/')
     }
   }
 
@@ -47,8 +49,12 @@ export class Orchestrator {
 
   private async generateAndStore(projectId: number, scenarioId: number, freePort: number): Promise<IScenarioFiles> {
     const scenarioData = await this.backApi.getScenarioEvents(projectId, scenarioId)
-    const images = await this.screens.generateScreens(scenarioData.events, freePort)
+    const images = await this.screens.generateScreens(scenarioData.events.reverse(), freePort)
     const files = await this.storage.uploadAll(images)
     return {scenarioId, files}
+  }
+
+  private async cleanUp(codeDir: string, screensDir: string): Promise<void> {
+    fs
   }
 }

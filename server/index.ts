@@ -12,6 +12,7 @@ import { BackEndAPI } from './api/services/BackEndApi.sevice'
 import { IApiConf } from './api/services/types/api-conf'
 import { PixelDiff } from './api/services/PixelDiff'
 import {readFileSync, createWriteStream} from 'fs'
+import { DiffOrchestrator } from './api/services/DiffOrchestrator.service'
 
 const boot = async (): Promise<Application> => {
   const port = Number(process.env.PORT)
@@ -28,6 +29,7 @@ const boot = async (): Promise<Application> => {
   const bakApi: BackEndAPI = new BackEndAPI(apiConf)
   const orchestrator = new Orchestrator(github, tar, screens, storage, bakApi)
   const pix = new PixelDiff()
+  const diffOrchestrator = new DiffOrchestrator(storage, bakApi, pix)
   // const ff = readFileSync('./screens/1574517289787-start-.png')
   // const ff1 = readFileSync('./screens/1574517292662-click- Login.png')
   // const diff = await pix.compare(ff, ff1)
@@ -36,6 +38,6 @@ const boot = async (): Promise<Application> => {
   //   console.log('NAME', fname)
   //   // diff.diff.pipe(createWriteStream('iuhuu.png'))
   // }
-  return new Server().router(routes(orchestrator)).listen(port)
+  return new Server().router(routes(orchestrator, diffOrchestrator)).listen(port)
 }
 export default boot()

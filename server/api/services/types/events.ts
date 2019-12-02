@@ -8,8 +8,8 @@ export interface IEventData {
   path: IEventPath[]
   csspath: string
   csspathfull: string
-  windowWidth?: number
-  windowHeight?: number
+  screenWidth?: number
+  screenHeight?: number
   clientX?: number
   clientY?: number
   scrollX: number

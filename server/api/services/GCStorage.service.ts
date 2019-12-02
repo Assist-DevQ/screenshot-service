@@ -38,7 +38,8 @@ export class GCStorage {
           cacheControl: 'public, max-age=31536000'
         }
       })
-      return file.metadata.id
+      await file.makePublic()
+      return this.getPublicUrl(file.metadata.name)
     } catch (err) {
       logger.error(err)
     }
@@ -55,7 +56,10 @@ export class GCStorage {
       })
       stream.on('error', rej)
       stream.on('finish', () => {
-        fileStream.makePublic().then(() => res(this.getPublicUrl(filename))).catch(rej)
+        fileStream
+          .makePublic()
+          .then(() => res(this.getPublicUrl(filename)))
+          .catch(rej)
       })
       file.pipe(stream)
     })
@@ -73,7 +77,7 @@ export class GCStorage {
     }
   }
 
-  public getPublicUrl (filename) {
+  public getPublicUrl(filename) {
     return `https://storage.googleapis.com/${this.bucketName}/${filename}`
   }
 }
