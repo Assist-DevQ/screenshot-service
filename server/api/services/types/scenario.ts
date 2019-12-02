@@ -1,4 +1,5 @@
 import { IEvent } from './events'
+import { IScreenMeta } from './code-meta';
 
 export interface IScenarioMeta {
   id: number,
@@ -20,7 +21,12 @@ export interface IScenarioEventResponse {
   scenario: IScenarioEvent
 }
 
+export interface IEventFile {
+  eventId: number,
+  fileUrl: string
+}
+
 export interface IScenarioFiles {
-  scenarioId: number,
-  files: string[]
+  meta: IScreenMeta,
+  files: IEventFile[]
 }

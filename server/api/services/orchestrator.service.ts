@@ -8,7 +8,7 @@ import path from 'path'
 import getPort from 'get-port'
 import logger from '../../common/logger'
 import { BackEndAPI } from './BackEndApi.sevice'
-import { IScenarioFiles, IScenarioMeta } from './types/scenario'
+import { IScenarioMeta, IScenarioFiles } from './types/scenario'
 import rimraf from 'rimraf'
 import { IScreenMeta } from './types/code-meta'
 
@@ -54,7 +54,7 @@ export class Orchestrator {
     const scenarioData = await this.backApi.getScenarioEvents(meta.projectId, meta.scenarioId)
     const images = await this.screens.generateScreens(meta, scenarioData.events, freePort)
     const files = await this.storage.uploadAll(images)
-    return { scenarioId: meta.scenarioId, files }
+    return {meta, files}
   }
 
   private cleanUp(codeDir: string, screensDir: string): void {

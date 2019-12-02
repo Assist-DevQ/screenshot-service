@@ -88,18 +88,48 @@ components:
     ScenarioScreens:
       title: ScenarioScreens
       required:
-        - scenarioId
+        - meta
         - files
       type: object
       properties:
-        scenarioId:
-          type: number
-          example: 12
+        meta:
+          type: object
+          $ref: '#/components/schemas/ScreenMeta'
         files:
           type: array
           items:
-            type: string
-            example: 'https://storage.googleapis.com/dev-q-screens/1575277729589-start-.png'
+            type: object
+            $ref: '#/components/schemas/ScreenFile'
+    ScreenMeta:
+      title: ScreenMeta
+      required:
+        - commitId
+        - projectId
+        - scenarioId
+      type: object
+      properties:
+        commitId:
+          type: string
+          example: 376fefd
+        projectId:
+          type: number
+          example: 11
+        scenarioId:
+          type: number
+          example: 4
+    ScreenFile:
+      title: ScreenFile
+      required:
+        - eventId
+        - fileUrl
+      type: object
+      properties:
+        eventId:
+          type: number
+          example: 23
+        fileUrl:
+          type: string
+          example: https://storage.googleapis.com/dev-q-screens/376fefd-11-4-23-click-.png
     DiffRequest:
       title: DiffRequest
       required:

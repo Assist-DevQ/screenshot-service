@@ -1,6 +1,7 @@
 import { Storage, GetSignedUrlConfig } from '@google-cloud/storage'
 import logger from '../../common/logger'
 import { Readable } from 'stream'
+import { IEventFile } from './types/scenario'
 
 export class GCStorage {
   private readonly storageClient: Storage
@@ -25,21 +26,21 @@ export class GCStorage {
     }
   }
 
-  public async uploadAll(files: string[]): Promise<string[]> {
-    const ups = files.map((f: string) => this.upload(f))
+  public async uploadAll(files: IEventFile[]): Promise<IEventFile[]> {
+    const ups = files.map((f: IEventFile) => this.upload(f))
     return Promise.all(ups)
   }
 
-  public async upload(filename: string): Promise<string> {
+  public async upload(fileMeta: IEventFile): Promise<IEventFile> {
     try {
-      const [file, _] = await this.storageClient.bucket(this.bucketName).upload(filename, {
+      const [file, _] = await this.storageClient.bucket(this.bucketName).upload(fileMeta.fileUrl, {
         gzip: true,
         metadata: {
           cacheControl: 'public, max-age=31536000'
         }
       })
       await file.makePublic()
-      return this.getPublicUrl(file.metadata.name)
+      return {eventId: fileMeta.eventId, fileUrl: this.getPublicUrl(file.metadata.name)}
     } catch (err) {
       logger.error(err)
     }

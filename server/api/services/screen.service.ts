@@ -2,7 +2,7 @@ import logger from '../../common/logger'
 import { IEvent, DOMEvent } from './types/events'
 import puppeteer, { Browser, Page } from 'puppeteer'
 import { parse } from 'url'
-import { IScenarioEvent } from './types/scenario'
+import { IEventFile } from './types/scenario'
 import { IScreenMeta } from './types/code-meta'
 
 export class ScreenService {
@@ -17,24 +17,24 @@ export class ScreenService {
     this.browser = browser
   }
 
-  public async generateScreens(meta: IScreenMeta, events: IEvent[], port: number): Promise<string[]> {
+  public async generateScreens(meta: IScreenMeta, events: IEvent[], port: number): Promise<IEventFile[]> {
     if (events.length === 0) {
       return []
     }
     logger.info('Start generating', events.length)
     const page = await this.browser.newPage()
     logger.info('New browser page is ready!')
-    const imagePaths = []
-    await this.recScreens(meta, events.reverse(), port, imagePaths, page)
-    return imagePaths
+    const eventFiles: IEventFile[] = []
+    await this.recScreens(meta, events.reverse(), port, eventFiles, page)
+    return eventFiles
   }
 
-  private async recScreens(meta: IScreenMeta, events: IEvent[], port: number, imgs: string[], page: Page): Promise<void> {
+  private async recScreens(meta: IScreenMeta, events: IEvent[], port: number, imgs: IEventFile[], page: Page): Promise<void> {
     if (events.length) {
       logger.info('Remaining events:', events.length)
       const evt = events.pop()
-      const imgPath = await this.handleEvent(meta, evt, port, page)
-      imgs.push(imgPath)
+      const fileUrl = await this.handleEvent(meta, evt, port, page)
+      imgs.push({eventId: evt.id, fileUrl})
       await this.recScreens(meta, events, port, imgs, page)
     }
   }
