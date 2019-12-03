@@ -19,6 +19,7 @@ export class DockerService {
       childProcess.stdout.pipe(
         new Transform({
           transform: (chunk: any, enc: string, cb: TransformCallback) => {
+            if (chunk.toString().indexOf(this.errMarker) > -1) { rej(chunk.toString()) }
             if (chunk.toString().indexOf(this.upMarker) > -1) {
               logger.info('The testing server is up.')
               res(childProcess)
@@ -31,6 +32,7 @@ export class DockerService {
   }
 
   private static readonly upMarker: string = 'To create a production build, use npm run build.'
+  private static readonly errMarker: string = 'Error:'
   private static dockerBuildCommand: string = 'docker build -t'
   private static dockerRunCommand = (port: number): string => {
     return `docker run -v \${PWD}:/app -v /app/node_modules -p ${port}:3000 --rm`

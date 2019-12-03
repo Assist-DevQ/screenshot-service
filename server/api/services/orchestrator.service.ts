@@ -13,6 +13,7 @@ import rimraf from 'rimraf'
 import { IScreenMeta, ICommDiffMeta } from './types/code-meta'
 import { IOrchestratorConfig } from './types/orchestrator-config'
 import { DiffOrchestrator } from './DiffOrchestrator.service'
+import { ChildProcess } from 'child_process'
 
 export class Orchestrator {
   private readonly scrDir: string = 'screens'
@@ -48,17 +49,20 @@ export class Orchestrator {
     const gitRes = await this.github.repoReadStreamAxios(repo)
     const dir = await this.tar.extract(gitRes.codeStream, repo)
     const codeDir = path.normalize([dir, gitRes.folderName].join('/'))
-    await DockerService.build(codeDir, repo.repo, gitRes.commitId)
-    const freePort = await getPort()
-    const runningProc = await DockerService.run(codeDir, freePort, repo.repo, gitRes.commitId)
-    const outDir = `${this.scrDir}/${repo.projectId}/${repo.branch}/${gitRes.commitId}`
+    let runningProc: ChildProcess
     try {
+      await DockerService.build(codeDir, repo.repo, gitRes.commitId)
+      const freePort = await getPort()
+      runningProc = await DockerService.run(codeDir, freePort, repo.repo, gitRes.commitId)
+      const outDir = `${this.scrDir}/${repo.projectId}/${repo.branch}/${gitRes.commitId}`
       await this.tar.createDir(outDir)
       const screens = await this.generateScreens(gitRes.commitId, repo.projectId, outDir, freePort, tag)
       return { commitId: gitRes.commitId, outDir, screens }
     } finally {
       logger.warn('Screens done, killing the test server:', runningProc.pid)
-      runningProc.kill()
+      if (runningProc) {
+        runningProc.kill()
+      }
       this.cleanUp(codeDir)
     }
   }
