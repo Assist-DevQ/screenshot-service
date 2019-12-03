@@ -92,6 +92,7 @@ components:
       title: ScreenMeta
       required:
         - commitId
+        - diffCommitId
         - projectId
         - scenarioId
       type: object
@@ -99,6 +100,9 @@ components:
         commitId:
           type: string
           example: 376fefd
+        diffCommitId:
+          type: string
+          example: 19cfefd
         projectId:
           type: number
           example: 11
@@ -109,6 +113,7 @@ components:
       title: ScreenFile
       required:
         - eventId
+        - hasDiff
         - baseFileUrl
         - diffFileUrl
       type: object
@@ -116,6 +121,9 @@ components:
         eventId:
           type: number
           example: 23
+        hasDiff:
+          type: boolean
+          example: true
         baseFileUrl:
           type: string
           example: https://storage.googleapis.com/dev-q-screens/376fefd-11-4-23-base-click-.png

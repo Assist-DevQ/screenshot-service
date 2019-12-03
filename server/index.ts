@@ -30,14 +30,7 @@ const boot = async (): Promise<Application> => {
   const pix = new PixelDiff()
   const diffOrchestrator = new DiffOrchestrator(storage, pix)
   const orchestrator = new Orchestrator({ github, tar, screens, backApi, diffOrchestrator })
-  // const ff = readFileSync('./screens/1574517289787-start-.png')
-  // const ff1 = readFileSync('./screens/1574517292662-click- Login.png')
-  // const diff = await pix.compare(ff, ff1)
-  // if(diff.diff)  {
-  //   const fname = await storage.uploadStream('the-fucking-dif.png', diff.diff)
-  //   console.log('NAME', fname)
-  //   // diff.diff.pipe(createWriteStream('iuhuu.png'))
-  // }
+  
   return new Server().router(routes(orchestrator)).listen(port)
 }
 export default boot()

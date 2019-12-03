@@ -26,21 +26,21 @@ export class GCStorage {
     }
   }
 
-  public async uploadAll(files: IEventFile[]): Promise<IEventFile[]> {
-    const ups = files.map((f: IEventFile) => this.upload(f))
+  public async uploadAll(files: string[]): Promise<string[]> {
+    const ups = files.map((f: string) => this.upload(f))
     return Promise.all(ups)
   }
 
-  public async upload(fileMeta: IEventFile): Promise<IEventFile> {
+  public async upload(fileName: string): Promise<string> {
     try {
-      const [file, _] = await this.storageClient.bucket(this.bucketName).upload(fileMeta.fileUrl, {
+      const [file, _] = await this.storageClient.bucket(this.bucketName).upload(fileName, {
         gzip: true,
         metadata: {
           cacheControl: 'public, max-age=31536000'
         }
       })
       await file.makePublic()
-      return {eventId: fileMeta.eventId, fileUrl: this.getPublicUrl(file.metadata.name)}
+      return this.getPublicUrl(file.metadata.name)
     } catch (err) {
       logger.error(err)
     }

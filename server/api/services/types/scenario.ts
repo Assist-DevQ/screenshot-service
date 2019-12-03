@@ -27,6 +27,7 @@ export interface IEventFile {
 
 export interface IDiffFile {
   eventId: number,
+  hasDiff?: boolean,
   baseFileUrl: string,
   diffFileUrl: string
 }
