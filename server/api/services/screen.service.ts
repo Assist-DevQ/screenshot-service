@@ -23,13 +23,24 @@ export class ScreenService {
     }
     logger.info('Start generating', events.length)
     const page = await this.browser.newPage()
-    logger.info('New browser page is ready!')
-    const eventFiles: IEventFile[] = []
-    await this.recScreens(meta, events.reverse(), port, eventFiles, page)
-    return eventFiles
+    try {
+      logger.info('New browser page is ready!')
+      const eventFiles: IEventFile[] = []
+      await this.recScreens(meta, events.reverse(), port, eventFiles, page)
+      return eventFiles
+    } finally {
+      logger.warn('Closing the page')
+      page.close()
+    }
   }
 
-  private async recScreens(meta: IScreenMeta, events: IEvent[], port: number, imgs: IEventFile[], page: Page): Promise<void> {
+  private async recScreens(
+    meta: IScreenMeta,
+    events: IEvent[],
+    port: number,
+    imgs: IEventFile[],
+    page: Page
+  ): Promise<void> {
     if (events.length) {
       logger.info('Remaining events:', events.length)
       const evt = events.pop()
@@ -103,6 +114,8 @@ export class ScreenService {
   }
 
   private computeFileName(meta: IScreenMeta, e: IEvent): string {
-    return `${meta.commitId}-${meta.projectId}-${meta.scenarioId}-${e.id}-${meta.tag}-${e.name}-${e.data.innerText || e.data.type || ''}`
+    return `${meta.commitId}-${meta.projectId}-${meta.scenarioId}-${e.id}-${meta.tag}-${e.name}-${e.data.innerText ||
+      e.data.type ||
+      ''}`
   }
 }
