@@ -92,6 +92,7 @@ export class ScreenService {
   private async takeScreen(meta: IScreenMeta, e: IEvent, page: Page): Promise<string> {
     logger.info('Taking screen:', page.url())
     const path = `${meta.outDir}/${this.computeFileName(meta, e)}.png`
+    await this.hideCursor(page)
     await page.screenshot({ path })
     return path
   }
@@ -102,6 +103,14 @@ export class ScreenService {
     await Promise.all([page.goto(testingUrl), page.waitForNavigation({ waitUntil: 'networkidle0' })])
   }
 
+  private async hideCursor(page: Page): Promise<void> {
+    const styleContent = `
+      input {
+        caret-color: transparent !important;
+      }
+    `
+    await page.addStyleTag({ content: styleContent })
+  }
   private genUrl(port: number, originalUrl: string): string {
     const parsedUrl = parse(originalUrl)
     return `${this.localUrl}:${port}${parsedUrl.path}${parsedUrl.hash ? parsedUrl.hash : ''}`
