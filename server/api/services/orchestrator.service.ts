@@ -10,7 +10,7 @@ import logger from '../../common/logger'
 import { BackEndAPI } from './BackEndApi.sevice'
 import { IScenarioMeta, IScenarioFiles, IScenarioDiff, IDiffFile, IEventFile, IGenerateResult } from './types/scenario'
 import rimraf from 'rimraf'
-import { IScreenMeta, IDiffMeta } from './types/code-meta'
+import { IScreenMeta, ICommDiffMeta } from './types/code-meta'
 import { IOrchestratorConfig } from './types/orchestrator-config'
 import { DiffOrchestrator } from './DiffOrchestrator.service'
 
@@ -19,7 +19,6 @@ export class Orchestrator {
   private readonly github: GithubService
   private readonly tar: TarService
   private readonly screens: ScreenService
-  private readonly storage: GCStorage
   private readonly backApi: BackEndAPI
   private readonly diffOrchestrator: DiffOrchestrator
 
@@ -27,7 +26,6 @@ export class Orchestrator {
     this.github = conf.github
     this.tar = conf.tar
     this.screens = conf.screens
-    this.storage = conf.storage
     this.backApi = conf.backApi
     this.diffOrchestrator = conf.diffOrchestrator
   }
@@ -39,20 +37,7 @@ export class Orchestrator {
     try {
       const grouped = this.groupByScenario(baseRes.screens, diffRes.screens)
       const diffs = await this.diffOrchestrator.generateDiff(grouped)
-      const finalRes: IScenarioDiff[] = []
-      diffs.forEach((v: Map<number, IDiffFile>, sId: number) => {
-        const files: IDiffFile[] = []
-        v.forEach((v: IDiffFile, eId: number) => {
-          files.push(v)
-        })
-        const meta: IDiffMeta = {
-          projectId: baseRepo.projectId,
-          scenarioId: sId,
-          commitId: baseRes.commitId
-        }
-        finalRes.push({ meta, files })
-      })
-      return finalRes
+      return this.groupedToDiffArray(diffs, baseRepo.projectId, baseRes.commitId, diffRes.commitId)
     } finally {
       this.cleanUp(`${baseRes.outDir}/**/*.png`)
       this.cleanUp(`${diffRes.outDir}/**/*.png`)
@@ -78,16 +63,27 @@ export class Orchestrator {
     }
   }
 
-  private async generateScreens(commitId: string, projectId: number, outDir: string, freePort: number, tag: string): Promise<IScenarioFiles[]> {
+  private async generateScreens(
+    commitId: string,
+    projectId: number,
+    outDir: string,
+    freePort: number,
+    tag: string
+  ): Promise<IScenarioFiles[]> {
     const scenarios = await this.backApi.getScenarios(projectId)
-    const m: (s: IScenarioMeta) => IScreenMeta = (s: IScenarioMeta) => ({ commitId, projectId, scenarioId: s.id, outDir, tag })
+    const m: (s: IScenarioMeta) => IScreenMeta = (s: IScenarioMeta) => ({
+      commitId,
+      projectId,
+      scenarioId: s.id,
+      outDir,
+      tag
+    })
     return Promise.all(scenarios.map((s: IScenarioMeta) => this.generateAndStore(m(s), freePort)))
   }
 
   private async generateAndStore(meta: IScreenMeta, freePort: number): Promise<IScenarioFiles> {
     const scenarioData = await this.backApi.getScenarioEvents(meta.projectId, meta.scenarioId)
     const files = await this.screens.generateScreens(meta, scenarioData.events, freePort)
-    // const files = await this.storage.uploadAll(images) //TODO: remove
     return { meta, files }
   }
 
@@ -123,5 +119,28 @@ export class Orchestrator {
       grouped.set(s.meta.scenarioId, newFiles)
     })
     return grouped
+  }
+
+  private groupedToDiffArray(
+    diffs: Map<number, Map<number, IDiffFile>>,
+    projectId: number,
+    commitId: string,
+    diffCommitId: string
+  ): IScenarioDiff[] {
+    const finalRes: IScenarioDiff[] = []
+    diffs.forEach((sv: Map<number, IDiffFile>, sId: number) => {
+      const files: IDiffFile[] = []
+      sv.forEach((v: IDiffFile, eId: number) => {
+        files.push(v)
+      })
+      const meta: ICommDiffMeta = {
+        projectId,
+        scenarioId: sId,
+        commitId,
+        diffCommitId
+      }
+      finalRes.push({ meta, files })
+    })
+    return finalRes
   }
 }

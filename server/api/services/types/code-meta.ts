@@ -12,6 +12,10 @@ export interface IDiffMeta {
   scenarioId: number,
 }
 
+export interface ICommDiffMeta extends IDiffMeta {
+  diffCommitId: string,
+}
+
 export interface IScreenMeta extends IDiffMeta {
   outDir: string,
   tag: string

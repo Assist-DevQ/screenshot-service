@@ -11,7 +11,7 @@ import { Orchestrator } from './api/services/orchestrator.service'
 import { BackEndAPI } from './api/services/BackEndApi.sevice'
 import { IApiConf } from './api/services/types/api-conf'
 import { PixelDiff } from './api/services/PixelDiff'
-import {readFileSync, createWriteStream} from 'fs'
+import { readFileSync, createWriteStream } from 'fs'
 import { DiffOrchestrator } from './api/services/DiffOrchestrator.service'
 
 const boot = async (): Promise<Application> => {
@@ -29,7 +29,7 @@ const boot = async (): Promise<Application> => {
   const backApi: BackEndAPI = new BackEndAPI(apiConf)
   const pix = new PixelDiff()
   const diffOrchestrator = new DiffOrchestrator(storage, pix)
-  const orchestrator = new Orchestrator({github, tar, screens, storage, backApi, diffOrchestrator})
+  const orchestrator = new Orchestrator({ github, tar, screens, backApi, diffOrchestrator })
   // const ff = readFileSync('./screens/1574517289787-start-.png')
   // const ff1 = readFileSync('./screens/1574517292662-click- Login.png')
   // const diff = await pix.compare(ff, ff1)

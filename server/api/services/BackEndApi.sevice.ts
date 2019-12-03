@@ -1,7 +1,6 @@
 import { IApiConf } from './types/api-conf'
 import { IScenariosResponse, IScenarioEventResponse, IScenarioMeta, IScenarioEvent } from './types/scenario'
 import axios, { AxiosInstance } from 'axios'
-import logger from '../../common/logger'
 
 export class BackEndAPI {
   private readonly conf: IApiConf
@@ -22,10 +21,9 @@ export class BackEndAPI {
   public async getScenarios(projectId: number): Promise<IScenarioMeta[]> {
     return (await this.http.get<IScenariosResponse>(`${this.conf.scenarios}?project_id=${projectId}`)).data.scenarios
   }
-  
+
   public async getScenarioEvents(projectId: number, scenarioId: number): Promise<IScenarioEvent> {
-    const path = `${this.conf.scenarios}/${scenarioId}/?project_id=${projectId}`
-    logger.info('CALLING', `${this.conf.baseUrl}${path}`)
+    const path = `${this.conf.scenarios}/${scenarioId}/events/?project_id=${projectId}`
     return (await this.http.get<IScenarioEventResponse>(path)).data.scenario
   }
 }

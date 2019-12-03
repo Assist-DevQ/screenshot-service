@@ -1,5 +1,5 @@
 import { IEvent } from './events'
-import { IScreenMeta, IDiffMeta } from './code-meta';
+import { IScreenMeta, IDiffMeta, ICommDiffMeta } from './code-meta';
 
 export interface IScenarioMeta {
   id: number,
@@ -13,7 +13,6 @@ export interface IScenariosResponse {
 export interface IScenarioEvent {
   id: number,
   name: string,
-  runs: any,
   events: IEvent[]
 }
 
@@ -33,7 +32,7 @@ export interface IDiffFile {
 }
 
 export interface IScenarioDiff {
-  meta: IDiffMeta,
+  meta: ICommDiffMeta,
   files: IDiffFile[]
 }
 

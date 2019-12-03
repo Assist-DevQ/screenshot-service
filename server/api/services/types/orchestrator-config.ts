@@ -9,7 +9,6 @@ export interface IOrchestratorConfig {
   github: GithubService
   tar: TarService
   screens: ScreenService
-  storage: GCStorage
   backApi: BackEndAPI
   diffOrchestrator: DiffOrchestrator
 }
