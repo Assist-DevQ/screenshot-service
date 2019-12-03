@@ -59,8 +59,8 @@ export class Orchestrator {
       const screens = await this.generateScreens(gitRes.commitId, repo.projectId, outDir, freePort, tag)
       return { commitId: gitRes.commitId, outDir, screens }
     } finally {
-      logger.warn('Screens done, killing the test server:', runningProc.pid)
       if (runningProc) {
+        logger.warn('Screens done, killing the test server:', runningProc.pid)
         runningProc.kill()
       }
       this.cleanUp(codeDir)

@@ -1,4 +1,4 @@
-import { PixelDiff } from './PixelDiff'
+import { PixelDiff } from './PixelDiff.service'
 import { GCStorage } from './GCStorage.service'
 import { IDiffFile } from './types/scenario'
 import { promises } from 'fs'

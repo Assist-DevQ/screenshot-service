@@ -10,8 +10,7 @@ import { Application } from 'express'
 import { Orchestrator } from './api/services/orchestrator.service'
 import { BackEndAPI } from './api/services/BackEndApi.sevice'
 import { IApiConf } from './api/services/types/api-conf'
-import { PixelDiff } from './api/services/PixelDiff'
-import { readFileSync, createWriteStream } from 'fs'
+import { PixelDiff } from './api/services/PixelDiff.service'
 import { DiffOrchestrator } from './api/services/DiffOrchestrator.service'
 
 const boot = async (): Promise<Application> => {

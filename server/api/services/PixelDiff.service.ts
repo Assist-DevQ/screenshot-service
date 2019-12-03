@@ -8,7 +8,7 @@ export class PixelDiff {
     const otherPng = await this.readPng(otherImg)
     const {width, height} = basePng
     const diffPng = new PNG({width, height})
-    const diffs = pixelmatch(basePng.data, otherPng.data, diffPng.data , width, height, {threshold: 0.1})
+    const diffs = pixelmatch(basePng.data, otherPng.data, diffPng.data , width, height, {threshold: 0.7})
     return {
       hasDiff: diffs > 0,
       diff: diffs > 0 ? diffPng.pack() : undefined

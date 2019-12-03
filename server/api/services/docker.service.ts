@@ -31,11 +31,11 @@ export class DockerService {
     })
   }
 
-  private static readonly upMarker: string = 'To create a production build, use npm run build.'
+  private static readonly upMarker: string = 'Accepting connections at'
   private static readonly errMarker: string = 'Error:'
   private static dockerBuildCommand: string = 'docker build -t'
   private static dockerRunCommand = (port: number): string => {
-    return `docker run -v \${PWD}:/app -v /app/node_modules -p ${port}:3000 --rm`
+    return `docker run -p ${port}:5000 --rm`
   }
   private static buildCommand(serviceName: string, version: string): string {
     return `${this.dockerBuildCommand} ${serviceName}:${version} .`
